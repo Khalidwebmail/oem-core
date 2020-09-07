@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::group(['prefix' => 'core', 'namespace' => 'API\V1'], function () {
+
+    Route::apiResource("departments", "DepartmentController");
+    Route::apiResource("subjects", "SubjectController");
 });
