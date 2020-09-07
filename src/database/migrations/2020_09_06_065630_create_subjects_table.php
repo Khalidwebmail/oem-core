@@ -17,9 +17,10 @@ class CreateSubjectsTable extends Migration
             $table->id();
             $table->integer("dept_id");
             $table->string("name");
-            $table->string("slug");
+            $table->string("slug")->unique();
             $table->string("code");
             $table->decimal("credit_hour");
+            $table->unique(['name', 'code']);
             $table->timestamps();
         });
     }
