@@ -5,7 +5,6 @@ namespace App\Http\Controllers\API\V1;
 use App\Department;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DepartmentRequest;
-use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Redis;
 
@@ -59,7 +58,7 @@ class DepartmentController extends Controller
         $department->save();
 
         Redis::publish('core.department.update', json_encode($department->toArray()));
-
+        
         return new JsonResource($department);
     }
 
@@ -79,6 +78,7 @@ class DepartmentController extends Controller
         Redis::publish('core.department.destroy', json_encode($department->toArray()));
 
         $department->delete();
+        Redis::publish(env('CHANNEL_PREFIX').'destroy', $department);
 
         return response()->json(['message' => 'Department Deletion Successful!'], 200);
     }

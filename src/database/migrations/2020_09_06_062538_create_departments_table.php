@@ -19,6 +19,8 @@ class CreateDepartmentsTable extends Migration
             $table->string("slug");
             $table->string("code")->unique();
             $table->timestamps();
+
+            $table->unique(['name','slug']);
         });
     }
 
