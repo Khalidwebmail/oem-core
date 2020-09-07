@@ -15,12 +15,11 @@ class CreateSubjectsTable extends Migration
     {
         Schema::create('subjects', function (Blueprint $table) {
             $table->id();
-            $table->integer("dept_id");
+            $table->tinyInteger("dept_id");
             $table->string("name");
-            $table->string("slug")->unique();
-            $table->string("code");
+            $table->string("slug");
+            $table->string("code")->unique();
             $table->decimal("credit_hour");
-            $table->unique(['name', 'code']);
             $table->timestamps();
         });
     }

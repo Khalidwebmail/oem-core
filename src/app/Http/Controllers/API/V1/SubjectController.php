@@ -30,10 +30,7 @@ class SubjectController extends Controller
      */
     public function store(SubjectRequest $request)
     {
-        $validated = $request->validated();
-        $data = $request->all();
-        $subject = Subject::create($data);
-
+        $subject = Subject::create($request->all());
         return new JsonResource($subject);
     }
 
@@ -59,10 +56,11 @@ class SubjectController extends Controller
      */
     public function update(SubjectRequest $request, Subject $subject)
     {
-        $request->validated();
-        $data = $request->all();
-        $subject->update($data);
-        Redis::publish(env('CHANNEL_PREFIX').'update', $subject);
+        $subject->fill($request->all());
+        $subject->save();
+
+        Redis::publish('core.subject.update', json_encode($subject->toArray()));
+
         return new JsonResource($subject);
     }
 
@@ -78,8 +76,9 @@ class SubjectController extends Controller
         if(! $subject) {
             return response()->json(['error' => 'This subject does not exists'], 404);
         }
+        Redis::publish('core.subject.destroy', json_encode($subject->toArray()));
+
         $subject->delete();
-        Redis::publish(env('CHANNEL_PREFIX').'destroy', $subject);
 
         return response()->json(['message' => 'Subject deletion successful!'], 200);
     }

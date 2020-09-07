@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\DepartmentRequest;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Redis;
 
 class DepartmentController extends Controller
 {
@@ -29,10 +30,7 @@ class DepartmentController extends Controller
      */
     public function store(DepartmentRequest $request)
     {
-        // Retrieve the validated input data...
-        $validated = $request->validated();
-        $data = $request->all();
-        $department = Department::create($data);
+        $department = Department::create($request->all());
         return new JsonResource($department);
     }
 
@@ -57,10 +55,10 @@ class DepartmentController extends Controller
      */
     public function update(DepartmentRequest $request, Department $department)
     {
-        $request->validated();
-        $data = $request->all();
+        $department->fill($request->all());
+        $department->save();
 
-        $department->update($data);
+        Redis::publish('core.department.update', json_encode($department->toArray()));
 
         return new JsonResource($department);
     }
@@ -73,10 +71,13 @@ class DepartmentController extends Controller
      */
     public function destroy($department)
     {
-        $department = Department::find($department);
+        $department = Department::findOrFail($department);
         if(! $department) {
             return response()->json(['error' => 'This department does not exists'], 404);
         }
+
+        Redis::publish('core.department.destroy', json_encode($department->toArray()));
+
         $department->delete();
 
         return response()->json(['message' => 'Department Deletion Successful!'], 200);
