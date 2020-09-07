@@ -8,10 +8,10 @@ use Illuminate\Support\Str;
 
 $factory->define(Department::class, function (Faker $faker) {
 
-    $name = $faker->departmentName;
+    $name = $faker->sentence($nbWords = 6, $variableNbWords = true);
     return [
         'name' => $name,
         'slug' => Str::slug($name),
-        'code' => $faker->departmentNumber
+        'code' => rand(1000, 3000)
     ];
 });
