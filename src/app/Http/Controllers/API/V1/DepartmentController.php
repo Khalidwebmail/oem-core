@@ -58,7 +58,7 @@ class DepartmentController extends Controller
         $department->save();
 
         Redis::publish('core.department.update', json_encode($department->toArray()));
-        
+
         return new JsonResource($department);
     }
 

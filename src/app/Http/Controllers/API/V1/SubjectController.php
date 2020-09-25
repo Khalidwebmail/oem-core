@@ -43,6 +43,7 @@ class SubjectController extends Controller
     public function show($subject)
     {
         $subject = Subject::findOrFail($subject);
+        $subject->load("department");
 
         return new JsonResource($subject);
     }
